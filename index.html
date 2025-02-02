@@ -1,0 +1,298 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yapılacaklar Listesi</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AFTOR RizeMe</h1>
+        
+        <!-- Puan Barı -->
+        <div id="scoreSection">
+            <div id="scoreText">Puan: 0</div>
+            <div id="scoreBar"></div>
+        </div>
+
+        <!-- Görev Ekleme Alanı -->
+        <div id="taskInputArea">
+            <input type="text" id="taskInput" placeholder="Yeni görev ekle...">
+            <button id="addTaskBtn">Ekle</button>
+        </div>
+
+        <!-- Görev Listesi -->
+        <ul id="taskList"></ul>
+
+        <!-- Pop-up Message -->
+        <div id="popup">
+            <div id="popupMessage"></div>
+            <button id="closePopupBtn">Kapat</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html><style>/* Genel Stil */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(45deg, #4c6ef5, #6a82fb, #9b59b6);
+    margin: 0;
+    padding: 0;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Başlık */
+h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Puan Barı */
+#scoreSection {
+    margin: 20px 0;
+}
+
+#scoreBar {
+    height: 20px;
+    background-color: #4caf50;
+    border-radius: 15px;
+    transition: width 0.5s ease-in-out;
+}
+
+#scoreText {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Görev Alanı */
+#taskInputArea {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#taskInput {
+    padding: 12px;
+    width: 70%;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-right: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+#addTaskBtn {
+    padding: 12px 20px;
+    background-color: #3498db;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+#addTaskBtn:hover {
+    background-color: #2980b9;
+}
+
+/* Görev Listesi */
+#taskList {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+#taskList li {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+#taskList li:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+#taskList li.completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Pop-up */
+#popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    animation: popupAnimation 0.5s ease-out;
+}
+
+/* Pop-up Mesaj */
+#popupMessage {
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+}
+
+/* Pop-up Kapatma Butonu */
+#closePopupBtn {
+    background-color: #f44336;
+    border: none;
+    padding: 10px 15px;
+    color: white;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+#closePopupBtn:hover {
+    background-color: darkred;
+}
+
+/* Pop-up Animasyonu */
+@keyframes popupAnimation {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}</style><script>// HTML Elemanları
+const taskInput = document.getElementById('taskInput');
+const addTaskBtn = document.getElementById('addTaskBtn');
+const taskList = document.getElementById('taskList');
+const scoreBar = document.getElementById('scoreBar');
+const scoreText = document.getElementById('scoreText');
+const popup = document.getElementById('popup');
+const popupMessage = document.getElementById('popupMessage');
+const closePopupBtn = document.getElementById('closePopupBtn');
+
+// Başlangıç Puanı
+let score = 0;
+let maxScore = 100;
+
+// Mizahi mesajlar
+const humorMessages = [
+    "Puanı tamamladın, kahve zamanı!",
+    "Başardın! Şimdi bir mola ver, belki bir pizza siparişi ver!",
+    "Tebrikler, bir süper kahraman gibisin!",
+    "Puan barını tamamlamak? Çocuk oyuncağı! Şimdi biraz eğlenebilirsin.",
+    "Harika! Şimdi dünyayı fethetme zamanı!",
+    "Puan tamamlandı! Çalışma saatleri bitti, eğlenebilirsin!"
+];
+
+// Yeni görev ekleme
+addTaskBtn.addEventListener('click', function() {
+    const taskText = taskInput.value.trim();
+
+    if (taskText !== "") {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span class="task-text">${taskText}</span>
+            <button class="delete-btn">X</button>
+        `;
+        taskList.appendChild(li);
+
+        // Görev eklenince input'u temizle
+        taskInput.value = '';
+
+        // Göreve tıklanarak tamamlanma
+        li.querySelector('.task-text').addEventListener('click', function() {
+            li.classList.toggle('completed');
+            // Görev tamamlandığında puan ekle
+            if (li.classList.contains('completed')) {
+                updateScore(10); // Her tamamlanan görev için 10 puan
+            } else {
+                updateScore(-10); // Görev tamamlanmazsa 10 puan düşer
+            }
+        });
+
+        // Silme butonuna tıklanarak görev silme
+        li.querySelector('.delete-btn').addEventListener('click', function() {
+            li.classList.add('fade-out');
+            setTimeout(() => taskList.removeChild(li), 200); // Silme işlemi animasyonu
+        });
+    }
+});
+
+// Puan güncelleme
+function updateScore(points) {
+    score += points;
+    if (score < 0) score = 0; // Puan negatif olmasın
+    if (score > maxScore) score = maxScore; // Puan üst sınırını aşmasın
+
+    // Puan barını güncelle
+    const percentage = (score / maxScore) * 100;
+    scoreBar.style.width = `${percentage}%`;
+    scoreText.textContent = `Puan: ${score}`;
+
+    // Eğer puan barı dolmuşsa pop-up'ı göster
+    if (percentage === 100) {
+        showPopup();
+    }
+}
+
+// Pop-up'ı göster
+function showPopup() {
+    const randomMessage = humorMessages[Math.floor(Math.random() * humorMessages.length)];
+    popupMessage.textContent = randomMessage;
+    popup.style.display = 'block';
+}
+
+// Pop-up'ı kapat
+closePopupBtn.addEventListener('click', function() {
+    popup.style.display = 'none';
+});</script>
